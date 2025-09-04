@@ -1,13 +1,16 @@
 import { Router } from "express";
 import { protect } from "../middleware/authMiddleware.js";
-import { listActiveRestaurants, getMenu, placeOrder } from "../controllers/userController.js";
+import { listActiveStores, getStoreMenu, placeOrder } from "../controllers/userController.js";
 
 const router = Router();
 
-router.get("/restaurants", listActiveRestaurants);
-router.get("/restaurants/:id/menu", getMenu);
+// Get all active stores (restaurants + grocery)
+router.get("/stores", listActiveStores);
 
-// user must be logged in to place order
+// Get menu/items of a specific store
+router.get("/stores/:id/menu", getStoreMenu);
+
+// User must be logged in to place order
 router.post("/orders", protect, placeOrder);
 
 export default router;

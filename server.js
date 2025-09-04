@@ -15,6 +15,8 @@ import ownerRoutes from "./routes/ownerRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
 import paymentRoutes, { stripeWebhook } from "./routes/paymentRoutes.js";
+import restaurantRoutes from "./routes/restaurantRoutes.js";
+import storeRoutes from "./routes/storeRoutes.js";
 
 dotenv.config();
 
@@ -75,7 +77,8 @@ app.use("/api/owner", ownerRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/upload", uploadRoutes);
 app.use("/api/payment", paymentRoutes);
-
+app.use("/api/restaurant", restaurantRoutes)
+app.use("/api/stores", storeRoutes);
 // Health
 app.get("/", (req, res) => res.json({ ok: true, service: "Tommalu API" }));
 
@@ -104,34 +107,3 @@ app.get("/api/restaurant/orders", (req, res) => {
 });
 
 
-app.get("/api/restaurants", (req, res) => {
-    res.json([
-        {
-            id: 1,
-            name: "Spice Garden",
-            cuisine: "Indian",
-            rating: 4.3,
-            deliveryTime: "30-40 min",
-            deliveryFee: 2.99,
-            image: "https://images.unsplash.com/photo-1604908812279-4b7a6e2d2b66?auto=format&fit=crop&w=800&q=80" // Indian thali
-        },
-        {
-            id: 2,
-            name: "Bombay Street Bites",
-            cuisine: "Indian Fast Food",
-            rating: 4.6,
-            deliveryTime: "20-30 min",
-            deliveryFee: 1.99,
-            image: "https://images.unsplash.com/photo-1598514982586-70f7749a63b6?auto=format&fit=crop&w=800&q=80" // Chaat
-        },
-        {
-            id: 3,
-            name: "Pizza Palace",
-            cuisine: "Italian",
-            rating: 4.7,
-            deliveryTime: "25-35 min",
-            deliveryFee: 3.49,
-            image: "http://localhost:8080/uploads/369063.jpg" // Pizza
-        }
-    ]);
-});

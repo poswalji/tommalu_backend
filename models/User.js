@@ -33,19 +33,40 @@ const userSchema = new mongoose.Schema(
       required: [true, "Password is required"],
       minlength: [6, "Password must be at least 6 characters"]
     },
+
+    // 🏠 Address
+    address: {
+      type: String,
+      required: [true, "Address is required"],
+      trim: true
+    },
+
+    // role system
     role: { 
       type: String, 
       enum: ["admin", "owner", "user"], 
       default: "user" 
     },
+
+    // account status
     status: { 
       type: String, 
       enum: ["active", "pending", "disabled"], 
       default: "active" 
     },
-    // Optional: for future token blacklist or refresh token system
-    refreshToken: { 
-      type: String 
+
+    // OTP verification
+    isVerified: { type: Boolean, default: false },
+    otp: String,
+    otpExpires: Date,
+
+    // refresh token system (future ready)
+    refreshToken: { type: String },
+
+    // 🔑 only for owners
+    approvedByAdmin: { 
+      type: Boolean, 
+      default: false 
     }
   },
   { timestamps: true }

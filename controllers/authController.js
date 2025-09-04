@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { OAuth2Client } from "google-auth-library";
 import User from "../models/User.js";
-import Restaurant from "../models/Restaurant.js";
+import Restaurant from "../models/Store.js";
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -11,7 +11,7 @@ const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 const genToken = (id) =>
   jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN || "7d" });
 
-// --- REGISTER ---
+// --- REGISTER WITH OTP ---
 export const register = asyncHandler(async (req, res) => {
   const { name, email, password, phone, role, restaurant } = req.body;
   if (!name || !email || !password || !phone)
@@ -23,13 +23,18 @@ export const register = asyncHandler(async (req, res) => {
   const hash = await bcrypt.hash(password, 10);
   const status = role === "owner" ? "pending" : "active";
 
+  // Generate OTP
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
   const user = await User.create({
     name,
     email,
     phone,
     password: hash,
     role: role || "user",
-    status
+    status,
+    otp,
+    otpExpires: Date.now() + 5 * 60 * 1000 // 5 minutes
   });
 
   // Create restaurant if owner
@@ -45,6 +50,31 @@ export const register = asyncHandler(async (req, res) => {
     });
   }
 
+  // TODO: send OTP via SMS/email (currently console log)
+  console.log("🔐 OTP for", email, ":", otp);
+
+  return res.status(201).json({
+    message: "Registered successfully. Please verify OTP.",
+    user: { id: user._id, email: user.email, phone: user.phone }
+  });
+});
+
+// --- VERIFY OTP ---
+export const verifyOtp = asyncHandler(async (req, res) => {
+  const { userId, otp } = req.body;
+
+  const user = await User.findById(userId);
+  if (!user) return res.status(404).json({ message: "User not found" });
+
+  if (user.otp !== otp || user.otpExpires < Date.now()) {
+    return res.status(400).json({ message: "Invalid or expired OTP" });
+  }
+
+  user.isVerified = true;
+  user.otp = null;
+  user.otpExpires = null;
+  await user.save();
+
   const token = genToken(user._id);
   res.cookie("token", token, {
     httpOnly: true,
@@ -53,8 +83,8 @@ export const register = asyncHandler(async (req, res) => {
     maxAge: 7 * 24 * 60 * 60 * 1000
   });
 
-  return res.status(201).json({
-    message: "Registered successfully",
+  res.json({
+    message: "OTP Verified Successfully",
     user: {
       id: user._id,
       name: user.name,
@@ -65,6 +95,24 @@ export const register = asyncHandler(async (req, res) => {
     }
   });
 });
+
+// --- RESEND OTP ---
+export const resendOtp = asyncHandler(async (req, res) => {
+  const { userId } = req.body;
+  const user = await User.findById(userId);
+  if (!user) return res.status(404).json({ message: "User not found" });
+
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+  user.otp = otp;
+  user.otpExpires = Date.now() + 5 * 60 * 1000;
+  await user.save();
+
+  // TODO: Send via SMS/email
+  console.log("🔄 Resent OTP:", otp);
+
+  res.json({ message: "OTP resent successfully" });
+});
+
 
 // --- LOGIN ---
 export const login = asyncHandler(async (req, res) => {

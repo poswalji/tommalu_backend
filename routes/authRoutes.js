@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { register, login, verifyToken, logout, googleAuth } from "../controllers/authController.js";
+import { register, login, verifyToken, logout,verifyOtp,resendOtp, googleAuth } from "../controllers/authController.js";
 
 const router = Router();
 
@@ -12,6 +12,9 @@ router.post("/google", googleAuth);
 
 // Verify JWT
 router.get("/verify", verifyToken);
+
+router.post("/verify-otp", verifyOtp);
+router.post("/resend-otp", resendOtp);
 
 // Logout
 router.post("/logout", logout);
