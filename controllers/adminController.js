@@ -1,12 +1,12 @@
 import asyncHandler from "express-async-handler";
 import User from "../models/User.js";
-import Restaurant from "../models/Restaurant.js";
+
 import Order from "../models/Order.js";
 
-export const listRestaurants = asyncHandler(async (req, res) => {
-  const list = await Restaurant.find().populate("ownerId", "name email status");
-  res.json(list);
-});
+// export const listRestaurants = asyncHandler(async (req, res) => {
+//   const list = await Restaurant.find().populate("ownerId", "name email status");
+//   res.json(list);
+// });
 
 export const approveRestaurant = asyncHandler(async (req, res) => {
   const { id } = req.params;
