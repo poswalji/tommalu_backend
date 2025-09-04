@@ -7,7 +7,7 @@ const WeightOptionSchema = new mongoose.Schema({
   price: Number
 });
 
-const ItemSchema = new mongoose.Schema({
+const MenuItem = new mongoose.Schema({
   id: Number,
   name: { type: String, required: true },
   price: Number,
@@ -20,4 +20,4 @@ const ItemSchema = new mongoose.Schema({
   weightOptions: [WeightOptionSchema]
 });
 
-module.exports = mongoose.model("Item", ItemSchema);
+module.exports = mongoose.model("Item", MenuItem);

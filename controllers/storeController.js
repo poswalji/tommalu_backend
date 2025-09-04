@@ -1,6 +1,6 @@
 // controllers/storeController.js
-const Store = require("../models/Store");
-const Item = require("../models/Item");
+const Store = require("../models/restaurent");
+const Item = require("../models/menuItem");
 
 // GET all stores
 exports.getAllStores = async (req, res) => {

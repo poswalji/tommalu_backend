@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
 
-const Item = require("./Item");
+const Item = require("./menuItem");
 
-const StoreSchema = new mongoose.Schema({
+const Restaurant = new mongoose.Schema({
   id: { type: Number, required: true },
   slug: { type: String, required: true, unique: true },
   name: { type: String, required: true },
@@ -15,3 +15,4 @@ const StoreSchema = new mongoose.Schema({
   image: String,
   items: [{ type: mongoose.Schema.Types.ObjectId, ref: "Item" }]
 });
+export default mongoose.model("Restaurant", Restaurant);
